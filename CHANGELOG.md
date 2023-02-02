@@ -1,3 +1,8 @@
+## 3.4.0
+
+* Return message "Need to declare android.permission.REQUEST_INSTALL_PACKAGES to call this api" when open APK
+* Refactor code
+
 ## 3.3.0
 
 * Remove `android.permission.REQUEST_INSTALL_PACKAGES`
