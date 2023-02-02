@@ -13,7 +13,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    container:
+      image:  google/dart:latest
     steps:
       - uses: actions/checkout@v3
 
@@ -22,10 +23,7 @@ jobs:
           flutter-version: '3.7.1'
           channel: 'stable'
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Write Credentials File
+      - name: Setup Credentials
         uses: joutvhu/write-file@v1
         with:
           path: ~/.pub-cache/credentials.json
