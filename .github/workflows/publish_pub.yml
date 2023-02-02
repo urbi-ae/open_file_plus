@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Write Gradle Properties File
+      - name: Write Credentials File
         uses: joutvhu/write-file@v1
         with:
           path: ~/.pub-cache/credentials.json
