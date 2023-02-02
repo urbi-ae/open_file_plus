@@ -18,11 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.7.1'
-          channel: 'stable'
-
       - name: Setup Credentials
         uses: joutvhu/write-file@v1
         with:
@@ -31,4 +26,4 @@ jobs:
           write_mode: overwrite
 
       - name: Publish package
-        run: flutter pub publish -f
+        run: pub publish -f
