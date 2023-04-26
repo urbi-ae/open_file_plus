@@ -26,7 +26,7 @@ OpenFile.open("/sdcard/example.txt");
 
 ## Support
 
-### android
+### Android
 
 ```
 {
@@ -101,8 +101,16 @@ OpenFile.open("/sdcard/example.txt");
     {".zip",    "application/x-zip-compressed"},
     {"",        "*/*"}
 }
-
 ```
+
+You must specify additional permissions if you want to open the respective file types below
+
+|   Type of media   |            Permission to request            | Android version |
+|:-----------------:|:-------------------------------------------:|:---------------:|
+|     APK files     | android.permission.REQUEST_INSTALL_PACKAGES |        -        |
+| Images and photos |    android.permission.READ_MEDIA_IMAGES     |       13+       |
+|      Videos       |     android.permission.READ_MEDIA_VIDEO     |       13+       |
+|    Audio files    |     android.permission.READ_MEDIA_AUDIO     |       13+       |
 
 when Conflict with other plugins about FileProvider, add code below in your /android/app/src/main/AndroidManifest.xml
 

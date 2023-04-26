@@ -1,3 +1,7 @@
+## 3.4.1
+
+* Fix issue on Android 13
+
 ## 3.4.0
 
 * Return message "Need to declare android.permission.REQUEST_INSTALL_PACKAGES to call this api" when open APK
