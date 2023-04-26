@@ -42,6 +42,9 @@ public class OpenFilePlusPlugin implements FlutterPlugin, MethodCallHandler, Act
     PluginRegistry.RequestPermissionsResultListener, PluginRegistry.ActivityResultListener {
     private static final int REQUEST_CODE = 33432;
     private static final int RESULT_CODE = 0x12;
+    private static final String TYPE_PREFIX_IMAGE = "image/";
+    private static final String TYPE_PREFIX_VIDEO = "video/";
+    private static final String TYPE_PREFIX_AUDIO = "audio/";
     private static final String TYPE_STRING_APK = "application/vnd.android.package-archive";
 
     /// The MethodChannel that will the communication between Flutter and native Android
@@ -94,19 +97,19 @@ public class OpenFilePlusPlugin implements FlutterPlugin, MethodCallHandler, Act
                     if (!isFileAvailable()) {
                         return;
                     }
-                    if (!isMediaStorePath() && !Environment.isExternalStorageManager()) {
-                        result(-3, "Permission denied: android.Manifest.permission.MANAGE_EXTERNAL_STORAGE");
-                        return;
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        if (!isMediaStorePath() && !Environment.isExternalStorageManager()) {
+                            result(-3, "Permission denied: android.Manifest.permission.MANAGE_EXTERNAL_STORAGE");
+                            return;
+                        }
                     }
                 }
-                if (hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                if (checkPermissions()) {
                     if (TYPE_STRING_APK.equals(typeString)) {
                         openApkFile();
                         return;
                     }
                     startActivity();
-                } else {
-                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
                 }
             } else {
                 startActivity();
@@ -115,6 +118,37 @@ public class OpenFilePlusPlugin implements FlutterPlugin, MethodCallHandler, Act
             result.notImplemented();
             isResultSubmitted = true;
         }
+    }
+
+    private boolean checkPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (typeStartsWith(TYPE_PREFIX_IMAGE, typeString)) {
+                if (!hasPermission(Manifest.permission.READ_MEDIA_IMAGES)) {
+                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_CODE);
+                    return false;
+                }
+            } else if (typeStartsWith(TYPE_PREFIX_VIDEO, typeString)) {
+                if (!hasPermission(Manifest.permission.READ_MEDIA_VIDEO)) {
+                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_MEDIA_VIDEO}, REQUEST_CODE);
+                    return false;
+                }
+            } else if (typeStartsWith(TYPE_PREFIX_AUDIO, typeString)) {
+                if (!hasPermission(Manifest.permission.READ_MEDIA_AUDIO)) {
+                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_MEDIA_AUDIO}, REQUEST_CODE);
+                    return false;
+                }
+            }
+        } else {
+            if (!hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean typeStartsWith(String prefix, String fileType) {
+        return fileType != null && fileType.startsWith(prefix);
     }
 
     private boolean hasPermission(String permission) {

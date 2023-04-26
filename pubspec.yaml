@@ -1,6 +1,6 @@
 name: open_file_plus
 description: A plug-in that can call native APP to open files with string result in flutter, support iOS(UTI) / android(intent) / PC(ffi) / web(dart:html)
-version: 3.4.0
+version: 3.4.1
 
 homepage: https://github.com/joutvhu/open_file_plus
 repository: https://github.com/joutvhu/open_file_plus.git
