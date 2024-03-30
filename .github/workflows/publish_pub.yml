@@ -13,17 +13,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image:  google/dart:latest
+    permissions:
+      id-token: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Setup Credentials
-        uses: joutvhu/write-file@v1
-        with:
-          path: ~/.pub-cache/credentials.json
-          contents: ${{ secrets.PUB_CREDENTIALS }}
-          write_mode: overwrite
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Publish - dry run
+        run: dart pub publish --dry-run
 
       - name: Publish package
-        run: pub publish -f
+        run: dart pub publish --force
