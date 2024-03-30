@@ -20,8 +20,17 @@ jobs:
 
       - uses: dart-lang/setup-dart@v1
 
+      - name: Setup Flutter SDK
+        uses: flutter-actions/setup-flutter@v2
+        with:
+          channel: stable
+          version: 3.19.5
+
+      - name: Install dependencies
+        run: flutter pub get
+
       - name: Publish - dry run
-        run: dart pub publish --dry-run
+        run: flutter pub publish --dry-run
 
       - name: Publish package
-        run: dart pub publish --force
+        run: flutter pub publish --force
