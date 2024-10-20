@@ -7,7 +7,6 @@ static NSString *const CHANNEL_NAME = @"open_file_plus";
 
 @implementation OpenFilePlusPlugin{
     FlutterResult _result;
-    UIViewController *_viewController;
     UIDocumentInteractionController *_documentController;
     UIDocumentInteractionController *_interactionController;
 }
@@ -16,19 +15,10 @@ static NSString *const CHANNEL_NAME = @"open_file_plus";
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:CHANNEL_NAME
                                      binaryMessenger:[registrar messenger]];
-    UIViewController *viewController =
-    [UIApplication sharedApplication].delegate.window.rootViewController;
-    OpenFilePlusPlugin* instance = [[OpenFilePlusPlugin alloc] initWithViewController:viewController];
+    OpenFilePlusPlugin* instance = [[OpenFilePlusPlugin alloc] init];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithViewController:(UIViewController *)viewController {
-    self = [super init];
-    if (self) {
-        _viewController = viewController;
-    }
-    return self;
-}
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"open_file" isEqualToString:call.method]) {
@@ -117,7 +107,7 @@ static NSString *const CHANNEL_NAME = @"open_file_plus";
             @try {
                 BOOL previewSucceeded = [_documentController presentPreviewAnimated:YES];
                 if(!previewSucceeded){
-                    [_documentController presentOpenInMenuFromRect:CGRectMake(500,20,100,100) inView:_viewController.view animated:YES];
+                    [_documentController presentOpenInMenuFromRect:CGRectMake(500,20,100,100) inView:self.getRootController.view animated:YES];
                 }
             }@catch (NSException *exception) {
                 NSDictionary * dict = @{@"message":@"File opened incorrectly。", @"type":@-4};
@@ -153,8 +143,15 @@ static NSString *const CHANNEL_NAME = @"open_file_plus";
       _result(json);
 }
 
+- (UIViewController *) getRootController {
+    NSSet<UIScene *> * scenes = [UIApplication sharedApplication].connectedScenes;
+    UIWindow * window = [(id <UIWindowSceneDelegate>)[[scenes allObjects] firstObject].delegate window];
+    
+    return window.rootViewController;
+}
+
 - (UIViewController *)documentInteractionControllerViewControllerForPreview:(UIDocumentInteractionController *)controller {
-    return  _viewController;
+    return self.getRootController;
 }
 
 - (BOOL) isBlankString:(NSString *)string {
